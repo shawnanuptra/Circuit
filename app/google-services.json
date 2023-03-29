@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "512929498814",
+    "project_id": "circuitassignment-d1508",
+    "storage_bucket": "circuitassignment-d1508.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512929498814:android:3615f8056a1155084b00ef",
+        "android_client_info": {
+          "package_name": "shawn.martin.circuit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512929498814-9m0836fne2qjsbceitvpckp2412bnjsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbupz-iMPEvN83lJP2k9Wr6Jq33En_GBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "512929498814-9m0836fne2qjsbceitvpckp2412bnjsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
