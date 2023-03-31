@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace 'shawn.martin.circuit'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "shawn.martin.circuit"
         minSdk 26
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -31,9 +31,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
     }
     kotlinOptions {
         jvmTarget = '1.8'
+        // allows usage of experimental APIs
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
         compose true
@@ -69,4 +72,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     // Dependency for Firebase
     implementation 'com.google.firebase:firebase-auth-ktx'
+    // Dependency for AnimatedNavHost
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.28.0"
 }
