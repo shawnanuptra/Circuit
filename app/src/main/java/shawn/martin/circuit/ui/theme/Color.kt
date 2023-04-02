@@ -1,5 +1,7 @@
 package shawn.martin.circuit.ui.theme
 
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 //val Purple200 = Color(0xFFBB86FC)
@@ -9,4 +11,4 @@ import androidx.compose.ui.graphics.Color
 
 val Blue200 = Color(0xFF90DDF0);
 val Blue700 = Color(0xFF2C666E);
-val Pink200 = Color(0xFFCE796B)
+val Pink200 = Color(0xFFCE796B);

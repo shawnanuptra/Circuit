@@ -67,6 +67,9 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
 
+    // Extended Icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
+
 
     // Implement Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
