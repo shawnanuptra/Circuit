@@ -27,7 +27,11 @@ import shawn.martin.circuit.util.Constants
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    // sharedViewModel: SharedViewModel,
+    navigateToHome: () -> Unit,
+    navigateToLogIn: () -> Unit,
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -213,5 +217,5 @@ fun SignUpScreen() {
 @Preview
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen()
+//    SignUpScreen()
 }

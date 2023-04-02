@@ -1,4 +1,4 @@
-package shawn.martin.circuit.ui.screens.signup
+package shawn.martin.circuit.ui.screens.login
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -27,7 +27,11 @@ import shawn.martin.circuit.util.Constants
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun LogInScreen() {
+fun LogInScreen(
+//    sharedViewModel: SharedViewModel
+    navigateToHome: () -> Unit,
+    navigateToSignUp: () -> Unit,
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -179,5 +183,5 @@ fun LogInScreen() {
 @Preview
 @Composable
 fun LogInScreenPreview() {
-    LogInScreen()
+//    LogInScreen()
 }
