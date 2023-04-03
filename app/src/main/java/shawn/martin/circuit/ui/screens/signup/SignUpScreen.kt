@@ -172,10 +172,10 @@ fun SignUpScreen(
                     }
 
 
-                    // Login Button
+                    // SignUp Button
                     Button(
                         onClick = {
-                            // navigateToLogin()
+                             navigateToHome()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -196,7 +196,7 @@ fun SignUpScreen(
                     ) {
                     Text(text = "Already have an account?")
                     TextButton(onClick = {
-                        //  navigateToLogin()
+                          navigateToLogIn()
                     }) {
                         Text(
                             text = "Log In here.",

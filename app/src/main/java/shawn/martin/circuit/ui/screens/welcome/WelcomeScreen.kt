@@ -62,7 +62,7 @@ fun WelcomeScreen(
 
                     OutlinedButton(
                         onClick = {
-                            navigateToSignup
+                            navigateToSignup()
                         }, modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp),

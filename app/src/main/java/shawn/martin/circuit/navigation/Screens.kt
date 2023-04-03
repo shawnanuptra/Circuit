@@ -23,7 +23,7 @@ class Screens(navController: NavController) {
         navController.navigate(route = HOME_SCREEN) {
             // inclusive = true => after logging in, make HomeScreen the new 'default' screen
             // ensure no other screens are in the backstack when navigating to HomeScreen
-            popUpTo(HOME_SCREEN) { inclusive = true }
+//            popUpTo(HOME_SCREEN) { inclusive = false }
         }
     }
     val component = {

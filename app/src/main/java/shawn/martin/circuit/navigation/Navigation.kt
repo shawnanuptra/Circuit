@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import shawn.martin.circuit.navigation.destination_composables.homeComposable
 import shawn.martin.circuit.navigation.destination_composables.logInComposable
 import shawn.martin.circuit.navigation.destination_composables.signUpComposable
 import shawn.martin.circuit.navigation.destination_composables.welcomeComposable
@@ -36,6 +37,10 @@ fun SetUpNavigation(
         signUpComposable(
             navigateToHome = screen.home,
             navigateToLogIn = screen.login
+        )
+
+        homeComposable(
+            navigateToWelcome = screen.welcome
         )
 
     }

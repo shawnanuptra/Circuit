@@ -141,7 +141,7 @@ fun LogInScreen(
                     // Login Button
                     Button(
                         onClick = {
-                            // navigateToLogin()
+                             navigateToHome()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -162,7 +162,7 @@ fun LogInScreen(
                     ) {
                     Text(text = "Don't have an account?")
                     TextButton(onClick = {
-                        //  navigateToLogin()
+                          navigateToSignUp()
                     }) {
                         Text(
                             text = "Sign Up here.",
