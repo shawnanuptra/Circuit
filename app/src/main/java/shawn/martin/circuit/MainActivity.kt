@@ -1,4 +1,4 @@
- package shawn.martin.circuit
+package shawn.martin.circuit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,12 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import dagger.hilt.android.AndroidEntryPoint
 import shawn.martin.circuit.navigation.SetUpNavigation
 import shawn.martin.circuit.ui.theme.CircuitTheme
 
- @ExperimentalAnimationApi
-
- class MainActivity : ComponentActivity() {
+@ExperimentalAnimationApi
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
 
     private lateinit var navController: NavHostController
 
