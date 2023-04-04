@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import shawn.martin.circuit.data.Resource
 import shawn.martin.circuit.ui.theme.CircuitTheme
 import shawn.martin.circuit.ui.theme.customTextFieldColors
@@ -38,6 +39,9 @@ fun LogInScreen(
     sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope();
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -45,9 +49,29 @@ fun LogInScreen(
 
     val logInFlow = sharedViewModel.logInFlow.collectAsState()
 
+    var validationMessage by remember { mutableStateOf("") }
+
+
+    fun validateForm(email: String, password: String) {
+        // reset validationMessage everytime validateForm() is called
+        validationMessage = ""
+
+        // Validate Email
+        val result = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        if (!result) {
+            validationMessage = "Please enter a correct email address"
+        }
+        // Validate Password
+        else if (password.length < 6) {
+            // password < 6 chars
+            validationMessage = "Please enter a password with a minimum of 6 characters"
+        }
+    }
+
     CircuitTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.primary,
+            scaffoldState = scaffoldState,
 
             ) { _ ->
             Column(
@@ -148,7 +172,17 @@ fun LogInScreen(
                     // Login Button
                     Button(
                         onClick = {
-                             sharedViewModel.logIn(email, password)
+                            validateForm(email, password)
+                            if (validationMessage == "") {
+                                sharedViewModel.logIn(email, password)
+                            } else {
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = validationMessage,
+                                        actionLabel = "OK"
+                                    )
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -186,9 +220,12 @@ fun LogInScreen(
                 logInFlow.value.let {
                     when (it) {
                         is Resource.Failure -> {
-                            val context = LocalContext.current
-                            Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
-                            // reset Resource after making text
+                            coroutineScope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = it.exception.message!!,
+                                    actionLabel = "OK"
+                                )
+                            }
                             sharedViewModel.resetLogInFlow()
                         }
                         is Resource.Loading -> {

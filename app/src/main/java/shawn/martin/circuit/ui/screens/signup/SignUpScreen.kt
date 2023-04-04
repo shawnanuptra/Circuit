@@ -1,7 +1,6 @@
 package shawn.martin.circuit.ui.screens.signup
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -12,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -24,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import shawn.martin.circuit.data.Resource
 import shawn.martin.circuit.ui.theme.CircuitTheme
 import shawn.martin.circuit.ui.theme.customTextFieldColors
@@ -39,18 +38,47 @@ fun SignUpScreen(
     sharedViewModel: SharedViewModel = hiltViewModel()
 
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
     var passwordVisible by remember { mutableStateOf(false) }
-    var passworConfirmVisible by remember { mutableStateOf(false) }
+    var passwordConfirmVisible by remember { mutableStateOf(false) }
 
     val signUpFlow = sharedViewModel.signUpFlow.collectAsState()
+
+    var validationMessage by remember { mutableStateOf("") }
+
+
+    fun validateForm(email: String, password: String, confirmPassword: String) {
+        // reset validationMessage everytime validateForm() is called
+        validationMessage = ""
+
+        // Validate Email
+        val result = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        if (!result) {
+            validationMessage = "Please enter a correct email address"
+        }
+        // Validate Password
+        else if (password.length < 6) {
+            // password < 6 chars
+            validationMessage = "Please enter a password with a minimum of 6 characters"
+        } else if (confirmPassword.isEmpty()) {
+            // confPass < 6 chars
+            validationMessage = "Please confirm your password"
+        } else if (password != confirmPassword) {
+            // password not match
+            validationMessage = "Passwords do not match"
+        }
+    }
+
 
     CircuitTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.primary,
+            scaffoldState = scaffoldState,
 
             ) { _ ->
             Column(
@@ -146,7 +174,7 @@ fun SignUpScreen(
                             colors = customTextFieldColors(),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
-                            visualTransformation = if (passworConfirmVisible) {
+                            visualTransformation = if (passwordConfirmVisible) {
                                 VisualTransformation.None
                             } else {
                                 PasswordVisualTransformation()
@@ -158,15 +186,15 @@ fun SignUpScreen(
                                 KeyboardType.Password
                             ),
                             trailingIcon = {
-                                if (passworConfirmVisible) {
+                                if (passwordConfirmVisible) {
                                     IconButton(onClick = {
-                                        passworConfirmVisible = !passworConfirmVisible
+                                        passwordConfirmVisible = !passwordConfirmVisible
                                     }) {
                                         Icon(imageVector = Icons.Filled.Visibility, "Hide password")
                                     }
                                 } else {
                                     IconButton(onClick = {
-                                        passworConfirmVisible = !passworConfirmVisible
+                                        passwordConfirmVisible = !passwordConfirmVisible
                                     }) {
                                         Icon(
                                             imageVector = Icons.Filled.VisibilityOff,
@@ -183,8 +211,17 @@ fun SignUpScreen(
                     // SignUp Button
                     Button(
                         onClick = {
-                            //TODO: validation!
-                            sharedViewModel.signUp(email, password)
+                            validateForm(email, password, confirmPassword)
+                            if (validationMessage == "") {
+                                sharedViewModel.signUp(email, password)
+                            } else {
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = validationMessage,
+                                        actionLabel = "OK"
+                                    )
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -223,9 +260,12 @@ fun SignUpScreen(
                 signUpFlow.value.let {
                     when (it) {
                         is Resource.Failure -> {
-                            val context = LocalContext.current
-                            Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
-                            // reset Resource after making text
+                            coroutineScope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = it.exception.message!!,
+                                    actionLabel = "OK"
+                                )
+                            }
                             sharedViewModel.resetSignUpFlow()
                         }
                         is Resource.Loading -> {
