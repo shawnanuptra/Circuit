@@ -10,6 +10,9 @@ class AuthRepositoryImpl @Inject constructor(private val auth: FirebaseAuth) : A
     override val currentUserId: String
         get() = auth.currentUser?.uid.orEmpty()
 
+    override val currentUser: FirebaseUser?
+        get() = auth.currentUser
+
     override val hasUser: Boolean
         get() = auth.currentUser != null
 

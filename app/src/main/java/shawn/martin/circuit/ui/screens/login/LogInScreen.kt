@@ -1,6 +1,7 @@
 package shawn.martin.circuit.ui.screens.login
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,22 +23,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import shawn.martin.circuit.data.Resource
 import shawn.martin.circuit.ui.theme.CircuitTheme
 import shawn.martin.circuit.ui.theme.customTextFieldColors
+import shawn.martin.circuit.ui.viewmodels.SharedViewModel
 import shawn.martin.circuit.util.Constants
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LogInScreen(
-//    sharedViewModel: SharedViewModel
     navigateToHome: () -> Unit,
     navigateToSignUp: () -> Unit,
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val logInFlow = sharedViewModel.logInFlow.collectAsState()
 
     CircuitTheme {
         Scaffold(
@@ -141,7 +148,7 @@ fun LogInScreen(
                     // Login Button
                     Button(
                         onClick = {
-                             navigateToHome()
+                             sharedViewModel.logIn(email, password)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -175,6 +182,27 @@ fun LogInScreen(
                     }
 
                 }
+
+                logInFlow.value.let {
+                    when (it) {
+                        is Resource.Failure -> {
+                            val context = LocalContext.current
+                            Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
+                            // reset Resource after making text
+                            sharedViewModel.resetLogInFlow()
+                        }
+                        is Resource.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                        is Resource.Success -> {
+                            LaunchedEffect(Unit) {
+                                navigateToHome()
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+
             }
         }
     }

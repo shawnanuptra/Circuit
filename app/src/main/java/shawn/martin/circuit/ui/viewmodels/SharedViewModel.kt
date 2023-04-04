@@ -16,14 +16,25 @@ class SharedViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
+    var currentUserId = repository.currentUserId;
     // StateFlow of Logging In. Will be used in UI to show Loading, Success, or Failure
     private val _logInFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
-    val loginFlow: StateFlow<Resource<FirebaseUser>?> = _logInFlow
+    val logInFlow: StateFlow<Resource<FirebaseUser>?> = _logInFlow
 
     // StateFlow of Signing up. Will be used in UI to show Loading, Success, or Failure
     private val _signUpFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
     val signUpFlow: StateFlow<Resource<FirebaseUser>?> = _signUpFlow
 
+    // methods to help reset flow states
+    fun resetSignUpFlow() {
+        _signUpFlow.value = null;
+    }
+    fun resetLogInFlow() {
+        _logInFlow.value = null;
+    }
+    fun setCurrentUser() {
+
+    }
 
     fun logIn(email: String, password: String) = viewModelScope.launch {
         // Mark as Loading
@@ -44,9 +55,8 @@ class SharedViewModel @Inject constructor(
         // sign out user
         repository.signOut();
 
-        // reset logIn & signUp StateFlow values
-        _signUpFlow.value = null;
-        _logInFlow.value = null;
+        resetSignUpFlow()
+        resetLogInFlow()
     }
 
 }

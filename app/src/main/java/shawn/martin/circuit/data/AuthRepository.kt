@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 interface AuthRepository {
     val currentUserId: String
     val hasUser: Boolean
+    val currentUser: FirebaseUser?
 
 //    val currentUser: Flow<User>
 

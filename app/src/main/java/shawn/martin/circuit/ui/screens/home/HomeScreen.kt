@@ -7,12 +7,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import shawn.martin.circuit.ui.viewmodels.SharedViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    // sharedViewModel: SharedViewModel
     navigateToWelcome: () -> Unit,
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
     Scaffold(
         topBar = {
@@ -21,6 +23,7 @@ fun HomeScreen(
                 backgroundColor = MaterialTheme.colors.primary,
                 actions = {
                     IconButton(onClick = {
+                        sharedViewModel.signOut()
                         navigateToWelcome()
                     }) {
                         Icon(imageVector = Icons.Filled.Logout, contentDescription = "Logout")
@@ -30,7 +33,7 @@ fun HomeScreen(
         }
     ) { _ ->
         Column() {
-            Text(text = "This is welcome screen")
+            Text(text = sharedViewModel.currentUserId)
         }
     }
 
