@@ -13,7 +13,8 @@ import shawn.martin.circuit.util.Constants.HOME_SCREEN
 fun NavGraphBuilder.homeComposable(
     // sharedViewModel: SharedViewModel,
     navigateToWelcome: () -> Unit,
-    navigateToAddComponent: () -> Unit
+    navigateToAddComponent: () -> Unit,
+    navigateToEditComponent: (String) -> Unit,
 ) {
     composable(
         route = HOME_SCREEN,
@@ -27,6 +28,6 @@ fun NavGraphBuilder.homeComposable(
         navBackStackEntry ->
 
         // Display UI
-        HomeScreen(navigateToWelcome, navigateToAddComponent)
+        HomeScreen(navigateToWelcome, navigateToAddComponent, navigateToEditComponent)
     }
 }

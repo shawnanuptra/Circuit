@@ -22,6 +22,7 @@ import shawn.martin.circuit.ui.viewmodels.SharedViewModel
 fun HomeScreen(
     navigateToWelcome: () -> Unit,
     navigateToAddComponent: () -> Unit,
+    navigateToEditComponent: (String) -> Unit,
     sharedViewModel: SharedViewModel = hiltViewModel(),
     firestoreViewModel: FirestoreViewModel = hiltViewModel(),
 ) {
@@ -57,7 +58,7 @@ fun HomeScreen(
         ) {
             items(
                 items = allComponents.value, itemContent = { item ->
-                    ListTile(item)
+                    ListTile(item, navigateToEditComponent)
                 }
             )
         }
@@ -71,5 +72,5 @@ fun HomeScreen(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen({}, {})
+//    HomeScreen({}, {})
 }

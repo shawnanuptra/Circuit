@@ -5,10 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,31 +13,41 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import shawn.martin.circuit.model.Component
+import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import shawn.martin.circuit.ui.theme.CircuitTheme
+import shawn.martin.circuit.ui.viewmodels.FirestoreViewModel
 import shawn.martin.circuit.util.Constants.SCREEN_HORIZONTAL_PADDING
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ComponentScreen(
-    component: Component,
-    navigateToWelcome: () -> Unit,
+fun EditComponentScreen(
+    navigateToHome: () -> Unit,
+    componentId: String,
 //    sharedViewModel: SharedViewModel = hiltViewModel(),
-//    firestoreViewModel: FirestoreViewModel = hiltViewModel(),
+    firestoreViewModel: FirestoreViewModel = hiltViewModel(),
 ) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf(null) }
 
+//     use component value, that is stored in firestoreVM
+//     the value is a mutable(), hence 'by'
+    var component by firestoreViewModel.component
 
+//     get component value from firestore before init of page itself
+    LaunchedEffect(Unit) { component = firestoreViewModel.getComponent(componentId)!! }
+
+    val scaffoldState = rememberScaffoldState();
+    val coroutineScope = rememberCoroutineScope();
     CircuitTheme {
         Scaffold(
+            scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
                     title = { Text(text = component.name) },
                     backgroundColor = MaterialTheme.colors.primary,
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            navigateToHome()
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = "Cancel"
@@ -49,7 +56,8 @@ fun ComponentScreen(
                     },
                     actions = {
                         IconButton(onClick = {
-                            //TODO: Update Component in Firestore
+                            firestoreViewModel.updateTask(component)
+                            navigateToHome()
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
@@ -76,8 +84,8 @@ fun ComponentScreen(
                     Text("Component", style = MaterialTheme.typography.h6)
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = name,
-                        onValueChange = { name = it },
+                        value = component.name,
+                        onValueChange = { firestoreViewModel.onNameChange(it) },
                         singleLine = true,
                         placeholder = { Text(text = "e.g. HyperX DDR4 16GB RAM") },
                     )
@@ -87,9 +95,9 @@ fun ComponentScreen(
                 Column() {
                     Text("Description", style = MaterialTheme.typography.h6)
                     OutlinedTextField(
-                        value = name,
+                        value = component.description,
                         modifier = Modifier.fillMaxWidth(),
-                        onValueChange = { name = it },
+                        onValueChange = { firestoreViewModel.onDescriptionChange(it) },
                         placeholder = { Text(text = "e.g. HyperX DDR4 16GB RAM") },
                     )
                 }
@@ -104,8 +112,8 @@ fun ComponentScreen(
                         Spacer(modifier = Modifier.size(10.dp))
                         OutlinedTextField(
                             //  colors = customTextFieldColors(),
-                            value = name,
-                            onValueChange = { name = it },
+                            value = component.price.toString(),
+                            onValueChange = { firestoreViewModel.onPriceChange(it.toDouble()) },
 //                        label = { Text("Component") },
                             placeholder = { Text(text = "e.g. HyperX DDR4 16GB RAM") },
                         )
@@ -140,17 +148,42 @@ fun ComponentScreen(
 
                         // Purchased Button
                         OutlinedButton(
-                            onClick = {},
-                            border = BorderStroke(1.dp, Color.Black),
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.Black,
-                                backgroundColor = Color.Transparent
+                            onClick = {
+                                      firestoreViewModel.onPurchasedChange(!component.purchased)
+                            },
+                            border = BorderStroke(
+                                1.dp,
+                                if (component.purchased) Color(0xFF206300) else Color(0xFFE97000)
                             ),
+                            colors =
+                            if (component.purchased) {
+                                ButtonDefaults.buttonColors(
+                                    contentColor = Color(0xFF206300),
+                                    backgroundColor = Color(0x0D206300)
+                                )
+                            } else {
+                                ButtonDefaults.buttonColors(
+                                    contentColor = Color(0xFFE97000),
+                                    backgroundColor = Color(0x0DE97000)
+                                )
+                            },
                             contentPadding = PaddingValues(10.dp)
                         ) {
-                            Icon(imageVector = Icons.Filled.Share, contentDescription = "Share")
-                            Spacer(modifier = Modifier.size(5.dp))
-                            Text("Purchased")
+                            if (component.purchased) {
+                                Icon(
+                                    imageVector = Icons.Filled.CheckCircle,
+                                    contentDescription = "Purchased"
+                                )
+                                Spacer(modifier = Modifier.size(5.dp))
+                                Text("Purchased")
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Pending,
+                                    contentDescription = "Not Purchased"
+                                )
+                                Spacer(modifier = Modifier.size(5.dp))
+                                Text("Not Purchased")
+                            }
 
                         }
                     }
@@ -188,6 +221,17 @@ fun ComponentScreen(
                     Button(
                         onClick = {
                             // update component
+                            try {
+                                firestoreViewModel.updateTask(component)
+                                navigateToHome()
+                            } catch (e: Exception) {
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = "Operation failed, please try again later",
+                                        actionLabel = "OK"
+                                    )
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -199,7 +243,18 @@ fun ComponentScreen(
 
                     OutlinedButton(
                         onClick = {
-//                    navigateToSignup()
+                            try {
+                                // delete
+                                firestoreViewModel.deleteTask(component)
+                                navigateToHome()
+                            } catch (e: Exception) {
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = "Operation failed, please try again later",
+                                        actionLabel = "OK"
+                                    )
+                                }
+                            }
                         }, modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp),
@@ -215,7 +270,7 @@ fun ComponentScreen(
 
                     OutlinedButton(
                         onClick = {
-//                    navigateToSignup()
+                            navigateToHome()
                         }, modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp),
@@ -239,15 +294,4 @@ fun ComponentScreen(
 @Preview
 @Composable
 fun ComponentScreenPreview() {
-    ComponentScreen(
-        Component(
-            "id34",
-            "Test name",
-            "this is description",
-            30.00,
-            true
-        )
-    ) {
-
-    }
 }

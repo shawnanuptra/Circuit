@@ -2,7 +2,7 @@ package shawn.martin.circuit.navigation
 
 import androidx.navigation.NavController
 import shawn.martin.circuit.util.Constants.ADD_COMPONENT_SCREEN
-import shawn.martin.circuit.util.Constants.COMPONENT_SCREEN
+import shawn.martin.circuit.util.Constants.EDIT_COMPONENT_SCREEN
 import shawn.martin.circuit.util.Constants.HOME_SCREEN
 import shawn.martin.circuit.util.Constants.LOGIN_SCREEN
 import shawn.martin.circuit.util.Constants.SIGNUP_SCREEN
@@ -27,10 +27,11 @@ class Screens(navController: NavController) {
 //            popUpTo(HOME_SCREEN) { inclusive = false }
         }
     }
-    val component = {
-        // ComponentScreen is added to backstack; pushed.
-        navController.navigate(route = COMPONENT_SCREEN)
-    }
+    val editComponent =
+        { componentId: String ->
+            // ComponentScreen is added to backstack; pushed.
+            navController.navigate(route = "$EDIT_COMPONENT_SCREEN/$componentId")
+        }
     val addComponent = {
         navController.navigate(route = ADD_COMPONENT_SCREEN)
     }

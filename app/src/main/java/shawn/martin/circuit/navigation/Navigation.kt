@@ -38,9 +38,13 @@ fun SetUpNavigation(
 
         homeComposable(
             navigateToWelcome = screen.welcome,
-            navigateToAddComponent = screen.addComponent
+            navigateToAddComponent = screen.addComponent,
+            navigateToEditComponent = screen.editComponent,
         )
         addComponentComposable(
+            navigateToHome = screen.home
+        )
+        editComponentComposable(
             navigateToHome = screen.home
         )
     }
