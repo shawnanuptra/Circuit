@@ -1,6 +1,7 @@
 package shawn.martin.circuit.navigation
 
 import androidx.navigation.NavController
+import shawn.martin.circuit.util.Constants.ADD_COMPONENT_SCREEN
 import shawn.martin.circuit.util.Constants.COMPONENT_SCREEN
 import shawn.martin.circuit.util.Constants.HOME_SCREEN
 import shawn.martin.circuit.util.Constants.LOGIN_SCREEN
@@ -29,6 +30,9 @@ class Screens(navController: NavController) {
     val component = {
         // ComponentScreen is added to backstack; pushed.
         navController.navigate(route = COMPONENT_SCREEN)
+    }
+    val addComponent = {
+        navController.navigate(route = ADD_COMPONENT_SCREEN)
     }
     val login = {
         // inclusive = false => pops everything out of the backstack until WelcomeScreen
